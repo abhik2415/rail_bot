@@ -150,7 +150,7 @@ RUN pip3 install uv && \
     chown -R $UID:$GID /app/backend/data/
 
 
-
+RUN ollama pull hellord/mxbai-embed-large-v1:f16
 # copy embedding weight from build
 # RUN mkdir -p /root/.cache/chroma/onnx_models/all-MiniLM-L6-v2
 # COPY --from=build /app/onnx /root/.cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx
@@ -172,5 +172,4 @@ USER $UID:$GID
 ARG BUILD_HASH
 ENV WEBUI_BUILD_VERSION=${BUILD_HASH}
 ENV DOCKER=true
-RUN ollama pull hellord/mxbai-embed-large-v1:f16
 CMD [ "bash", "start.sh"]
