@@ -27,11 +27,17 @@ ARG BUILD_HASH
 WORKDIR /app
 
 COPY package.json package-lock.json ./
+# Linux example
+# RUN export NODE_OPTIONS="--max-old-space-size=1048576" 
+ENV NODE_OPTIONS="--max-old-space-size=1048576"
+
+RUN npm install
 RUN npm ci
 
 COPY . .
 ENV APP_BUILD_HASH=${BUILD_HASH}
 RUN npm run build
+
 
 ######## WebUI backend ########
 FROM python:3.11-slim-bookworm AS base
@@ -127,6 +133,7 @@ RUN if [ "$USE_OLLAMA" = "true" ]; then \
     apt-get install -y --no-install-recommends ffmpeg libsm6 libxext6 && \
     # cleanup
     rm -rf /var/lib/apt/lists/*; \
+    # ollama pull hellord/mxbai-embed-large-v1:f16 \
     fi
 
 # install python dependencies
@@ -150,7 +157,7 @@ RUN pip3 install uv && \
     chown -R $UID:$GID /app/backend/data/
 
 
-RUN /ollama pull hellord/mxbai-embed-large-v1:f16
+
 # copy embedding weight from build
 # RUN mkdir -p /root/.cache/chroma/onnx_models/all-MiniLM-L6-v2
 # COPY --from=build /app/onnx /root/.cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx
